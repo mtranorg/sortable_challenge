@@ -113,8 +113,8 @@ class Product {
 
 public class challenge {
 
-	private static String productFile = "D:/Dev/challenge/products.txt";
-	private static String listingFile = "D:/Dev/challenge/listings.txt";
+	private static String productFile = "input/products.txt";
+	private static String listingFile = "input/listings.txt";
 	private final static String matchFile = "result.jsonl";
 
 	
@@ -148,6 +148,7 @@ public class challenge {
 		
 		Iterator it = products.iterator();
 		int hitsPerPage = 1000000;
+		Gson gson = new Gson();
 		
 		//for each product, do a query on the search index and create a match if applicable
 		while(it.hasNext()){
@@ -173,10 +174,12 @@ public class challenge {
 //				System.out.println("Found " + hits.length + " hits.");
 
 				//if hits > 0, create a match object
+				
 				if(hits.length>0){
 					Match m = new Match();
 					String product_name = curProduct.getProduct_name();
 					Listing[] matched_listings = new Listing[hits.length];
+					
 					for(int i=0;i<hits.length;++i) {
 						int docId = hits[i].doc;
 						Document d = searcher.doc(docId);
@@ -198,7 +201,7 @@ public class challenge {
 					m.setProduct_name(product_name);
 					m.setListings(matched_listings);
 					
-					Gson gson = new Gson();
+					
 					String jsonMatch = gson.toJson(m);
 //					System.out.println(jsonMatch);
 					
@@ -279,11 +282,7 @@ public class challenge {
 	}
 
 	private static ArrayList<Listing> populateListings() {
-
-		//read the product file line by line and create product objects
-
 		ArrayList<Listing> listings = new ArrayList<Listing>();
-
 
 		try{
 			FileInputStream fstream = new FileInputStream(listingFile);
@@ -293,11 +292,8 @@ public class challenge {
 			while ((jsonString = br.readLine()) != null)   {
 				//				System.out.println (jsonString);
 				GsonBuilder gsonBuilder = new GsonBuilder();
-
 				Gson gson = gsonBuilder.create();
-
 				Listing listing = gson.fromJson(jsonString, Listing.class);
-
 				listings.add(listing);
 			}
 			in.close();
@@ -305,16 +301,11 @@ public class challenge {
 			System.err.println("Error: " + e.getMessage());
 		}
 
-
 		return listings;
 	}
 
 	private static ArrayList<Product> populateProducts() {
-
-		//read the product file line by line and create product objects
-
 		ArrayList<Product> products = new ArrayList<Product>();
-
 
 		try{
 			FileInputStream fstream = new FileInputStream(productFile);
@@ -324,18 +315,14 @@ public class challenge {
 			while ((jsonString = br.readLine()) != null)   {
 				//				System.out.println (jsonString);
 				GsonBuilder gsonBuilder = new GsonBuilder();
-
 				Gson gson = gsonBuilder.create();
-
 				Product product = gson.fromJson(jsonString, Product.class);
-
 				products.add(product);
 			}
 			in.close();
 		}catch (Exception e){
 			System.err.println("Error: " + e.getMessage());
 		}
-
 
 		return products;
 	}
